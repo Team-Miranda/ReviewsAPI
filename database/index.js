@@ -12,9 +12,10 @@ const pool = new Pool({
 const getReviews = ({ page, count, sort, product_id }) => {
   // default count to 5 if count param is not specified
   count = count || 5;
+  // default page to 1 if page param is not specified
+  page = page || 1;
 
   // determin what is the sorting pattern
-  console.log(count);
   let sortingPattern = "";
   if (!sort || sort === "newest") {
     // sorting pattern is newest
@@ -31,6 +32,7 @@ const getReviews = ({ page, count, sort, product_id }) => {
     `SELECT *
     FROM reviews
     WHERE product_id=${product_id}
+    AND reported=false
     ORDER BY ${sortingPattern}
     LIMIT ${count};`
   );
