@@ -13,7 +13,12 @@ const getReviews = () => {
   return pool.query("SELECT * FROM reviews LIMIT 5");
 };
 
+const getMeta = () => {
+  return pool.query("SELECT * FROM characteristics LIMIT 5");
+};
+
 module.exports = {
   pool,
   getReviews,
+  getMeta,
 };

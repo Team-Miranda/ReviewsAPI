@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const { pool, getReviews } = require("../database/index.js");
+const { pool, getReviews, getMeta } = require("../database/index.js");
 
 const app = express();
 app.use(express.json());
@@ -18,13 +18,24 @@ app.listen(port, () => {
   console.log(`Listening to port ${port}`);
 });
 
-// get request
+// get request for all reviews
 app.get("/reviews", (req, res) => {
   getReviews()
     .then((result) => {
-      res.send(result.rows);
+      res.status(200).send(result.rows);
     })
     .catch((err) => {
-      console.log(err);
+      res.status(404).send(err);
+    });
+});
+
+// get request for all meta data
+app.get("/reviews/meta", (req, res) => {
+  getMeta()
+    .then((result) => {
+      res.status(200).send(result.rows);
+    })
+    .catch((err) => {
+      res.status(404).send(err);
     });
 });
