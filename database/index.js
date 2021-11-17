@@ -10,7 +10,30 @@ const pool = new Pool({
 
 // simple get reviews query
 const getReviews = ({ page, count, sort, product_id }) => {
-  return pool.query("SELECT * FROM reviews LIMIT 5");
+  // default count to 5 if count param is not specified
+  count = count || 5;
+
+  // determin what is the sorting pattern
+  console.log(count);
+  let sortingPattern = "";
+  if (!sort || sort === "newest") {
+    // sorting pattern is newest
+    sortingPattern = "date DESC";
+  } else if (sort === "helpful") {
+    // sorting pattern helpful
+    sortingPattern = "helpfulness DESC";
+  } else if (sort === "relevant") {
+    // sorting pattern is relevant
+    sortingPattern = "date DESC, helpfulness DESC";
+  }
+  // get query
+  return pool.query(
+    `SELECT *
+    FROM reviews
+    WHERE product_id=${product_id}
+    ORDER BY ${sortingPattern}
+    LIMIT ${count};`
+  );
 };
 
 // simple get metadata query
