@@ -8,11 +8,12 @@ const pool = new Pool({
   port: 5432,
 });
 
-// simple get query
-const getReviews = () => {
+// simple get reviews query
+const getReviews = ({ page, count, sort, product_id }) => {
   return pool.query("SELECT * FROM reviews LIMIT 5");
 };
 
+// simple get metadata query
 const getMeta = () => {
   return pool.query("SELECT * FROM characteristics LIMIT 5");
 };

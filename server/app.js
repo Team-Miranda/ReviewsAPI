@@ -20,7 +20,8 @@ app.listen(port, () => {
 
 // get request for all reviews
 app.get("/reviews", (req, res) => {
-  getReviews()
+  //console.log("this is the req ", req.query);
+  getReviews(req.query)
     .then((result) => {
       res.status(200).send(result.rows);
     })
