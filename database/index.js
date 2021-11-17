@@ -1,6 +1,4 @@
 const { Pool } = require("pg");
-const fs = require("fs");
-const fastcsv = require("fast-csv");
 
 // create new instance of pool
 const pool = new Pool({
@@ -10,6 +8,12 @@ const pool = new Pool({
   port: 5432,
 });
 
+// simple get query
+const getReviews = () => {
+  return pool.query("SELECT * FROM reviews LIMIT 5");
+};
+
 module.exports = {
   pool,
+  getReviews,
 };

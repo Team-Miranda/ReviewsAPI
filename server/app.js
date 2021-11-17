@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
-const { pool } = require("../database/index.js");
+const { pool, getReviews } = require("../database/index.js");
 
 const app = express();
 app.use(express.json());
@@ -17,4 +16,15 @@ pool.connect((err) => {
 // confirms connection to server
 app.listen(port, () => {
   console.log(`Listening to port ${port}`);
+});
+
+// get request
+app.get("/reviews", (req, res) => {
+  getReviews()
+    .then((result) => {
+      res.send(result.rows);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
