@@ -50,7 +50,7 @@ const addReview = ({
   reviewer_email,
 }) => {
   return pool.query(
-    `INSERT INTO reviews(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES(nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622, '${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING id;`
+    `INSERT INTO reviews(review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES(nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622, '${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id;`
   );
 };
 
@@ -59,9 +59,18 @@ const getMeta = () => {
   return pool.query("SELECT * FROM characteristics LIMIT 5");
 };
 
+// update helpfulness per review_id
+const helpReview = ({ review_id }) => {
+  console.log(review_id);
+  return pool.query(
+    `UPDATE reviews SET helpfulness = helpfulness + 1 WHERE review_id=${review_id};`
+  );
+};
+
 module.exports = {
   pool,
   getReviews,
   getMeta,
   addReview,
+  helpReview,
 };

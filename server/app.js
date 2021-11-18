@@ -5,6 +5,7 @@ const {
   getReviews,
   getMeta,
   addReview,
+  helpReview,
 } = require("../database/index.js");
 
 const app = express();
@@ -44,7 +45,6 @@ app.get("/reviews", (req, res) => {
 
 // post request to add a review
 app.post("/reviews", (req, res) => {
-  console.log(req.body);
   addReview(req.body)
     .then((result) => {
       res.send(result);
@@ -67,7 +67,15 @@ app.get("/reviews/meta", (req, res) => {
 });
 
 // update reviews as helpful
-app.put("/reviews/:review_id/helpful", (req, res) => {});
+app.put("/reviews/:review_id/helpful", (req, res) => {
+  helpReview(req.params)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
 
 // update reviews as reported
 app.put("/reviews/:review_id/report", (req, res) => {});
