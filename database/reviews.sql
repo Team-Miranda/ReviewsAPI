@@ -7,7 +7,7 @@ DROP TABLE characteristics_reviews CASCADE;
 
 /* Table 'characteristics' */
 CREATE TABLE "characteristics"(
-  id integer NOT NULL,
+  id serial,
   product_id integer NOT NULL,
   "name" varchar(25) NOT NULL,
   PRIMARY KEY(id)
@@ -15,7 +15,7 @@ CREATE TABLE "characteristics"(
 
 /* Table 'characteristics_reviews' */
 CREATE TABLE characteristics_reviews(
-  id integer NOT NULL,
+  id serial,
   characteristics_id integer NOT NULL,
   reviews_id integer NOT NULL,
   "value" integer NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE characteristics_reviews(
 
 /* Table 'photos' */
 CREATE TABLE photos(
-  id integer NOT NULL,
+  id serial,
   reviews_id integer NOT NULL,
   url text,
   PRIMARY KEY(id)
@@ -32,7 +32,7 @@ CREATE TABLE photos(
 
 /* Table 'reviews' */
 CREATE TABLE reviews(
-  id integer NOT NULL,
+  id serial,
   product_id integer NOT NULL,
   rating integer NOT NULL,
   date bigint NOT NULL,
