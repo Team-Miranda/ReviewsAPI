@@ -27,14 +27,22 @@ const getReviews = ({ page, count, sort, product_id }) => {
     // sorting pattern is relevant
     sortingPattern = "date DESC, helpfulness DESC";
   }
-  // get query
+
+  const reviewQueryString = `SELECT * FROM reviews WHERE product_id=${product_id} AND reported=false ORDER BY ${sortingPattern} LIMIT ${count};`;
+
+  // const reviewQueryString = `SELECT * FROM reviews LEFT JOIN photos ON reviews.id = photos.reviews_id WHERE product_id=${product_id} AND reported=false ORDER BY ${sortingPattern} LIMIT ${count};`;
+
+  const photoQueryString = `SELECT * FROM photos INNER JOIN reviews ON photos.reviews_id = reviews.id WHERE product_id=${product_id}`;
+
+  const queryPromises = [];
+  queryPromises.push(pool.query(reviewQueryString));
+
+  return Promise.all(queryPromises);
+};
+
+const addReview = (obj) => {
   return pool.query(
-    `SELECT *
-    FROM reviews
-    WHERE product_id=${product_id}
-    AND reported=false
-    ORDER BY ${sortingPattern}
-    LIMIT ${count};`
+    `INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES(2, 2, 1615987717622, 'test1', 'test2', true, false, 'kim', 'kim@gmail.com', 'test3', 23) ON CONFLICT (product_id) DO UPDATE;`
   );
 };
 
@@ -47,4 +55,5 @@ module.exports = {
   pool,
   getReviews,
   getMeta,
+  addReview,
 };
