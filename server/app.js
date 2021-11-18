@@ -48,11 +48,10 @@ app.get("/reviews", (req, res) => {
 app.post("/reviews", (req, res) => {
   addReview(req.body)
     .then((result) => {
-      res.send(result);
+      res.status(201).send();
     })
     .catch((err) => {
-      console.log(err);
-      res.send("failed");
+      res.send(err);
     });
 });
 
@@ -71,7 +70,7 @@ app.get("/reviews/meta", (req, res) => {
 app.put("/reviews/:review_id/helpful", (req, res) => {
   helpReview(req.params)
     .then((result) => {
-      res.send(result);
+      res.status(204).send();
     })
     .catch((err) => {
       res.send(err);
@@ -82,7 +81,7 @@ app.put("/reviews/:review_id/helpful", (req, res) => {
 app.put("/reviews/:review_id/report", (req, res) => {
   reportReview(req.params)
     .then((result) => {
-      res.send(result);
+      res.status(204).send();
     })
     .catch((err) => {
       res.send(err);

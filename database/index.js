@@ -14,10 +14,12 @@ const getReviews = ({ page, count, sort, product_id }) => {
   count = count || 5;
   // default page to 1 if page param is not specified
   page = page || 1;
+  // default sort to newest is sort param is not specified
+  sort = sort || "newest";
 
   // determin what is the sorting pattern
   let sortingPattern = "";
-  if (!sort || sort === "newest") {
+  if (sort === "newest") {
     // sorting pattern is newest
     sortingPattern = "date DESC";
   } else if (sort === "helpful") {
@@ -50,7 +52,33 @@ const addReview = ({
   reviewer_email,
 }) => {
   return pool.query(
-    `INSERT INTO reviews(review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES(nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622, '${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id;`
+    `INSERT INTO
+    reviews(
+      review_id,
+      product_id,
+      rating,
+      date,
+      summary,
+      body,
+      recommend,
+      reported,
+      reviewer_name,
+      reviewer_email,
+      response,
+      helpfulness)
+      VALUES
+      (nextval('reviews_id_seq'),
+      ${product_id},
+      ${rating},
+      1615987717622,
+      '${summary}',
+      '${body}',
+      ${recommend},
+      false,
+      '${reviewer_name}',
+      '${reviewer_email}',
+      '',
+      0)`
   );
 };
 
