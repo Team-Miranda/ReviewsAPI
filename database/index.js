@@ -43,7 +43,8 @@ const getReviews = ({ page, count, sort, product_id }) => {
     reviews.reviewer_name,
     reviews.response,
     reviews.helpfulness,
-    json_agg(json_build_object('id', photos.id, 'url', photos.url)) AS photos
+    COALESCE (json_agg(json_build_object('id', photos.id, 'url', photos.url)) FILTER (WHERE photos.reviews_id IS NOT NULL), '[]' )
+    AS photos
     FROM reviews
     LEFT JOIN photos ON reviews.review_id = photos.reviews_id
     WHERE reviews.product_id = ${product_id}
@@ -137,3 +138,30 @@ module.exports = {
   // return Promise.all(queryPromises);
 
  */
+
+/**
+   return pool.query(
+    `SELECT
+    reviews.review_id,
+    reviews.product_id,
+    reviews.date,
+    reviews.summary,
+    reviews.body,
+    reviews.recommend,
+    reviews.reviewer_name,
+    reviews.response,
+    reviews.helpfulness,
+    json_agg(json_build_object('id', photos.id, 'url', photos.url)) AS photos
+    FROM reviews
+    LEFT JOIN photos ON reviews.review_id = photos.reviews_id
+    WHERE reviews.product_id = ${product_id}
+    AND reported=false
+    GROUP BY reviews.review_id
+    ORDER BY ${sortingPattern}
+    LIMIT ${count};
+    `
+  );
+
+
+
+   */
