@@ -61,9 +61,15 @@ const getMeta = () => {
 
 // update helpfulness per review_id
 const helpReview = ({ review_id }) => {
-  console.log(review_id);
   return pool.query(
     `UPDATE reviews SET helpfulness = helpfulness + 1 WHERE review_id=${review_id};`
+  );
+};
+
+// update report per review_id
+const reportReview = ({ review_id }) => {
+  return pool.query(
+    `UPDATE reviews SET reported = true WHERE review_id=${review_id};`
   );
 };
 
@@ -73,4 +79,5 @@ module.exports = {
   getMeta,
   addReview,
   helpReview,
+  reportReview,
 };
