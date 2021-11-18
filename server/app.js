@@ -9,6 +9,7 @@ const {
   reportReview,
 } = require("../database/index.js");
 
+// middle ware
 const app = express();
 app.use(express.json());
 
@@ -57,11 +58,13 @@ app.post("/reviews", (req, res) => {
 
 // get request for all meta data
 app.get("/reviews/meta", (req, res) => {
-  getMeta()
+  console.log(req.query);
+  getMeta(req.query)
     .then((result) => {
       res.status(200).send(result.rows);
     })
     .catch((err) => {
+      console.log(err);
       res.status(404).send(err);
     });
 });

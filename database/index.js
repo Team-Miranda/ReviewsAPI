@@ -27,15 +27,15 @@ const getReviews = ({ page, count, sort, product_id }) => {
 
   return pool.query(
     `SELECT
-    reviews.review_id,
-    reviews.product_id,
-    reviews.date,
-    reviews.summary,
-    reviews.body,
-    reviews.recommend,
-    reviews.reviewer_name,
-    reviews.response,
-    reviews.helpfulness,
+      reviews.review_id,
+      reviews.product_id,
+      reviews.date,
+      reviews.summary,
+      reviews.body,
+      reviews.recommend,
+      reviews.reviewer_name,
+      reviews.response,
+      reviews.helpfulness,
     COALESCE (json_agg(json_build_object('id', photos.id, 'url', photos.url)) FILTER (WHERE photos.reviews_id IS NOT NULL), '[]' )
     AS photos
     FROM reviews
@@ -91,8 +91,21 @@ const addReview = ({
 };
 
 // simple get metadata query
-const getMeta = () => {
-  return pool.query("SELECT * FROM characteristics LIMIT 5");
+const getMeta = ({ product_id }) => {
+  return pool.query(
+    `SELECT
+      product_id,
+      json_build_object('2', 2, '3', 3) AS ratings,
+      json_build_object('0', 'not recommended', '1', 'recommended') AS recommended,
+      json_agg(json_build_object(name, json_build_object('id', 1, 'value', 2))) AS characteristics
+    FROM
+      characteristics
+    WHERE
+      product_id=${product_id}
+    GROUP BY
+      product_id
+    ;`
+  );
 };
 
 // update helpfulness per review_id
