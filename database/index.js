@@ -36,13 +36,21 @@ const getReviews = ({ page, count, sort, product_id }) => {
 
   const queryPromises = [];
   queryPromises.push(pool.query(reviewQueryString));
-
   return Promise.all(queryPromises);
 };
 
-const addReview = (obj) => {
+const addReview = ({
+  product_id,
+  rating,
+  date,
+  summary,
+  body,
+  recommend,
+  reviewer_name,
+  reviewer_email,
+}) => {
   return pool.query(
-    `INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES(2, 2, 1615987717622, 'test1', 'test2', true, false, 'kim', 'kim@gmail.com', 'test3', 23) ON CONFLICT (product_id) DO UPDATE;`
+    `INSERT INTO reviews(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES(nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622, '${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING id;`
   );
 };
 
