@@ -32,13 +32,27 @@ const getReviews = ({ page, count, sort, product_id }) => {
 
   const reviewQueryString = `SELECT * FROM reviews WHERE product_id=${product_id} AND reported=false ORDER BY ${sortingPattern} LIMIT ${count};`;
 
-  // const reviewQueryString = `SELECT * FROM reviews LEFT JOIN photos ON reviews.id = photos.reviews_id WHERE product_id=${product_id} AND reported=false ORDER BY ${sortingPattern} LIMIT ${count};`;
-
-  const photoQueryString = `SELECT * FROM photos INNER JOIN reviews ON photos.reviews_id = reviews.id WHERE product_id=${product_id}`;
-
-  const queryPromises = [];
-  queryPromises.push(pool.query(reviewQueryString));
-  return Promise.all(queryPromises);
+  return pool.query(
+    `SELECT
+    reviews.review_id,
+    reviews.product_id,
+    reviews.date,
+    reviews.summary,
+    reviews.body,
+    reviews.recommend,
+    reviews.reviewer_name,
+    reviews.response,
+    reviews.helpfulness,
+    json_agg(json_build_object('id', photos.id, 'url', photos.url)) AS photos
+    FROM reviews
+    LEFT JOIN photos ON reviews.review_id = photos.reviews_id
+    WHERE reviews.product_id = ${product_id}
+    AND reported=false
+    GROUP BY reviews.review_id
+    ORDER BY ${sortingPattern}
+    LIMIT ${count};
+    `
+  );
 };
 
 const addReview = ({
@@ -109,3 +123,17 @@ module.exports = {
   helpReview,
   reportReview,
 };
+
+/**
+  // THIS DOWN HERE IS THE WORKING REVIEW QUERY
+  // const reviewQueryString = `SELECT * FROM reviews WHERE product_id=${product_id} AND reported=false ORDER BY ${sortingPattern} LIMIT ${count};`;
+
+  // const reviewQueryString = `SELECT * FROM reviews LEFT JOIN photos ON reviews.id = photos.reviews_id WHERE product_id=${product_id} AND reported=false ORDER BY ${sortingPattern} LIMIT ${count};`;
+
+  // const photoQueryString = `SELECT * FROM photos INNER JOIN reviews ON photos.reviews_id = reviews.id WHERE product_id=${product_id}`;
+
+  // const queryPromises = [];
+  // queryPromises.push(pool.query(reviewQueryString));
+  // return Promise.all(queryPromises);
+
+ */

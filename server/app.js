@@ -29,8 +29,7 @@ app.listen(port, () => {
 app.get("/reviews", (req, res) => {
   //console.log("this is the req ", req.query);
   getReviews(req.query)
-    .then(([result, photos]) => {
-      console.log(photos);
+    .then((result) => {
       let resObj = {
         product: req.query.product_id,
         page: req.query.page || 0,
@@ -40,6 +39,7 @@ app.get("/reviews", (req, res) => {
       res.status(200).send(resObj);
     })
     .catch((err) => {
+      console.log(err);
       res.status(404).send(err);
     });
 });
