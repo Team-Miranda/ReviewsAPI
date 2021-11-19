@@ -86,15 +86,21 @@ const getMeta = ({ product_id }) => {
     `SELECT
       product_id,
       json_build_object(
-      '1', (select count(reviews.rating) from reviews where rating=1 and product_id=${product_id}),
-      '2', (select count(reviews.rating) from reviews where rating=2 and product_id=${product_id}),
-      '3', (select count(reviews.rating) from reviews where rating=3 and product_id=${product_id}),
-      '4', (select count(reviews.rating) from reviews where rating=4 and product_id=${product_id}),
-      '5', (select count(reviews.rating) from reviews where rating=5 and product_id=${product_id}))
+        '1', (select count(reviews.rating) from reviews where rating=1 and product_id=${product_id}),
+        '2', (select count(reviews.rating) from reviews where rating=2 and product_id=${product_id}),
+        '3', (select count(reviews.rating) from reviews where rating=3 and product_id=${product_id}),
+        '4', (select count(reviews.rating) from reviews where rating=4 and product_id=${product_id}),
+        '5', (select count(reviews.rating) from reviews where rating=5 and product_id=${product_id}))
       AS ratings,
-      json_build_object('0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}),
-       '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id})) AS recommended,
-      json_agg(json_build_object(name, json_build_object('id', 1, 'value', 2))) AS characteristics
+      json_build_object(
+        '0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}),
+        '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id}))
+      AS recommended,
+      json_agg(json_build_object(name, json_build_object(
+        'id', 1,
+        'value', 2
+        )))
+      AS characteristics
     FROM
       characteristics
     WHERE
