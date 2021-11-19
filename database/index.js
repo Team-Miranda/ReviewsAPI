@@ -60,6 +60,12 @@ const addReview = ({
   reviewer_email,
   photos,
 }) => {
+  photos =
+    "[" +
+    photos.map((each) => {
+      return `'${each}'`;
+    }) +
+    "]";
   return pool.query(
     `WITH insert AS (
       INSERT INTO
@@ -71,11 +77,7 @@ const addReview = ({
       INSERT INTO
         photos(id, reviews_id, url)
       VALUES
-        (nextval('photos_id_seq'), (select review_id from insert), '${photos[0]}'),
-        (nextval('photos_id_seq'), (select review_id from insert), '${photos[1]}'),
-        (nextval('photos_id_seq'), (select review_id from insert), '${photos[2]}'),
-        (nextval('photos_id_seq'), (select review_id from insert), '${photos[3]}'),
-        (nextval('photos_id_seq'), (select review_id from insert), '${photos[4]}');
+        (nextval('photos_id_seq'), (select review_id from insert), unnest(${photos}))
         `
   );
 };
