@@ -71,11 +71,11 @@ const addReview = ({
       INSERT INTO
         photos(id, reviews_id, url)
       VALUES
-        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[0]}'), '${photos[0]}'),
-        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[1]}'), '${photos[1]}'),
-        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[2]}'), '${photos[2]}'),
-        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[3]}'), '${photos[3]}'),
-        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[4]}'), '${photos[4]}');
+        (nextval('photos_id_seq'), (select review_id from insert), '${photos[0]}'),
+        (nextval('photos_id_seq'), (select review_id from insert), '${photos[1]}'),
+        (nextval('photos_id_seq'), (select review_id from insert), '${photos[2]}'),
+        (nextval('photos_id_seq'), (select review_id from insert), '${photos[3]}'),
+        (nextval('photos_id_seq'), (select review_id from insert), '${photos[4]}');
         `
   );
 };
@@ -85,8 +85,15 @@ const getMeta = ({ product_id }) => {
   return pool.query(
     `SELECT
       product_id,
-      json_build_object('2', 2, '3', 3) AS ratings,
-      json_build_object('0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}), '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id})) AS recommended,
+      json_build_object(
+      '1', (select count(reviews.rating) from reviews where rating=1 and product_id=${product_id}),
+      '2', (select count(reviews.rating) from reviews where rating=2 and product_id=${product_id}),
+      '3', (select count(reviews.rating) from reviews where rating=3 and product_id=${product_id}),
+      '4', (select count(reviews.rating) from reviews where rating=4 and product_id=${product_id}),
+      '5', (select count(reviews.rating) from reviews where rating=5 and product_id=${product_id}))
+      AS ratings,
+      json_build_object('0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}),
+       '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id})) AS recommended,
       json_agg(json_build_object(name, json_build_object('id', 1, 'value', 2))) AS characteristics
     FROM
       characteristics
