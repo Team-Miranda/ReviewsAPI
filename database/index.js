@@ -96,14 +96,15 @@ const getMeta = ({ product_id }) => {
         '0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}),
         '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id}))
       AS recommended,
-      json_agg(json_build_object(name, json_build_object(
-        'id', 1,
-        'value', 2
+      json_agg(json_build_object(c.name, json_build_object(
+        'id', c.id,
+        'value', (select cr.value from characteristics_reviews cr where c.id=cr.id)
         )))
       AS characteristics
-    FROM
-      characteristics
-    WHERE
+      FROM
+      characteristics c
+      LEFT JOIN characteristics_reviews cr ON c.id=cr.id
+      WHERE
       product_id=${product_id}
     GROUP BY
       product_id
