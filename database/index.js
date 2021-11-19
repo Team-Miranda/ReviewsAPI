@@ -86,7 +86,7 @@ const getMeta = ({ product_id }) => {
     `SELECT
       product_id,
       json_build_object('2', 2, '3', 3) AS ratings,
-      json_build_object('0', 'not recommended', '1', 'recommended') AS recommended,
+      json_build_object('0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}), '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id})) AS recommended,
       json_agg(json_build_object(name, json_build_object('id', 1, 'value', 2))) AS characteristics
     FROM
       characteristics
@@ -137,3 +137,23 @@ module.exports = {
 //     (review_id, ${photos[3]}),
 //     (review_id, ${photos[4]});
 //     )`;
+
+/*
+// simple get metadata query
+const getMeta = ({ product_id }) => {
+  return pool.query(
+    `SELECT
+      product_id,
+      json_build_object('2', 2, '3', 3) AS ratings,
+      json_build_object('0', 'not recommended', '1', 'recommended') AS recommended,
+      json_agg(json_build_object(name, json_build_object('id', 1, 'value', 2))) AS characteristics
+    FROM
+      characteristics
+    WHERE
+      product_id=${product_id}
+    GROUP BY
+      product_id
+    ;`
+  );
+};
+*/
