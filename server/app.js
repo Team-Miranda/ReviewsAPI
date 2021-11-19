@@ -47,11 +47,13 @@ app.get("/reviews", (req, res) => {
 
 // post request to add a review
 app.post("/reviews", (req, res) => {
+  console.log(req.body);
   addReview(req.body)
     .then((result) => {
       res.status(201).send();
     })
     .catch((err) => {
+      console.log(err);
       res.send(err);
     });
 });

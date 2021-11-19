@@ -58,35 +58,25 @@ const addReview = ({
   recommend,
   reviewer_name,
   reviewer_email,
+  photos,
 }) => {
   return pool.query(
-    `INSERT INTO
-    reviews(
-      review_id,
-      product_id,
-      rating,
-      date,
-      summary,
-      body,
-      recommend,
-      reported,
-      reviewer_name,
-      reviewer_email,
-      response,
-      helpfulness)
+    `WITH insert AS (
+      INSERT INTO
+        reviews
+        (review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
       VALUES
-      (nextval('reviews_id_seq'),
-      ${product_id},
-      ${rating},
-      1615987717622,
-      '${summary}',
-      '${body}',
-      ${recommend},
-      false,
-      '${reviewer_name}',
-      '${reviewer_email}',
-      '',
-      0)`
+        (nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622,'${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id
+    )
+      INSERT INTO
+        photos(id, reviews_id, url)
+      VALUES
+        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[0]}'), '${photos[0]}'),
+        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[1]}'), '${photos[1]}'),
+        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[2]}'), '${photos[2]}'),
+        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[3]}'), '${photos[3]}'),
+        (nextval('photos_id_seq'), NULLIF((select review_id from insert), ${photos[4]}'), '${photos[4]}');
+        `
   );
 };
 
@@ -130,3 +120,20 @@ module.exports = {
   helpReview,
   reportReview,
 };
+
+// `WITH insert1 AS (
+//   INSERT INTO
+//       reviews
+//       (review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
+//       VALUES
+//       (nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622,'${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id;
+// ), insert2 AS (
+//   INSERT INTO
+//     photos(reviews_id, url)
+//     VALUES
+//     (review_id, ${photos[0]}),
+//     (review_id, ${photos[1]}),
+//     (review_id, ${photos[2]}),
+//     (review_id, ${photos[3]}),
+//     (review_id, ${photos[4]});
+//     )`;
