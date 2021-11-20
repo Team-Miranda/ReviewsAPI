@@ -59,13 +59,17 @@ const addReview = ({
   reviewer_name,
   reviewer_email,
   photos,
+  characteristics,
 }) => {
+  let charKeys = Object.keys(characteristics);
+  let charVals = Object.values(characteristics);
   photos =
     "[" +
     photos.map((each) => {
       return `'${each}'`;
     }) +
     "]";
+
   return pool.query(
     `WITH insert AS (
       INSERT INTO
@@ -74,10 +78,10 @@ const addReview = ({
       VALUES
         (nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622,'${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id
     )
-      INSERT INTO
-        photos(id, reviews_id, url)
-      VALUES
-        (nextval('photos_id_seq'), (select review_id from insert), unnest(${photos}))
+     INSERT INTO
+       photos(id, reviews_id, url)
+     VALUES
+       (nextval('photos_id_seq'), (select review_id from insert), unnest(array${photos}))
         `
   );
 };
@@ -172,4 +176,17 @@ const getMeta = ({ product_id }) => {
     ;`
   );
 };
+
+, insertchar AS (
+      INSERT INTO
+        characteristics_reviews
+        (id, characteristics_id, reviews_id, value)
+      VALUES
+        (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[0]}),
+        (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[1]}),
+        (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[2]}),
+        (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[3]}),
+        (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[4]}),
+        (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[5]})
+    )
 */

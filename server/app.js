@@ -47,7 +47,6 @@ app.get("/reviews", (req, res) => {
 
 // post request to add a review
 app.post("/reviews", (req, res) => {
-  console.log(req.body);
   addReview(req.body)
     .then((result) => {
       res.status(201).send();
@@ -60,7 +59,6 @@ app.post("/reviews", (req, res) => {
 
 // get request for all meta data
 app.get("/reviews/meta", (req, res) => {
-  console.log(req.query);
   getMeta(req.query)
     .then((result) => {
       res.status(200).send(result.rows);

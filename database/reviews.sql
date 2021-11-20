@@ -32,7 +32,7 @@ CREATE TABLE photos(
 
 /* Table 'reviews' */
 CREATE TABLE reviews(
-  id serial,
+  review_id serial,
   product_id integer NOT NULL,
   rating integer NOT NULL,
   date bigint NOT NULL,
@@ -70,3 +70,11 @@ COPY photos(id, reviews_id, url) FROM '/Users/kimhonrada/hackreactor/SDC/Reviews
 COPY characteristics(id, product_id, name) FROM '/Users/kimhonrada/hackreactor/SDC/ReviewsAPI/database/characteristics.csv' DELIMITER ',' CSV HEADER;
 
 COPY characteristics_reviews(id, characteristics_id, reviews_id, value) FROM '/Users/kimhonrada/hackreactor/SDC/ReviewsAPI/database/characteristic_reviews.csv' DELIMITER ',' CSV HEADER;
+
+SELECT setval('reviews_id_seq', max(id)) FROM reviews;
+
+SELECT setval('photos_id_seq', max(id)) FROM photos;
+
+SELECT setval('characteristics_id_seq', max(id)) FROM characteristics;
+
+SELECT setval('characteristics_reviews_id_seq', max(id)) FROM characteristics_reviews;
