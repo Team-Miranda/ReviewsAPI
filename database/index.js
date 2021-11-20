@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { urlParser, valParser } = require("./helper/parser.js");
 
 // create new instance of pool
 const pool = new Pool({
@@ -61,28 +62,9 @@ const addReview = ({
   photos,
   characteristics,
 }) => {
-  let charKeys = Object.keys(characteristics);
-  let charVals = Object.values(characteristics);
-  photos =
-    "[" +
-    photos.map((each) => {
-      return `'${each}'`;
-    }) +
-    "]";
-
-  charKeys =
-    "[" +
-    charKeys.map((each) => {
-      return `'${parseInt(each)}'`;
-    }) +
-    "]";
-
-  charVals =
-    "[" +
-    charVals.map((each) => {
-      return `'${parseInt(each)}'`;
-    }) +
-    "]";
+  let charKeys = valParser(Object.keys(characteristics));
+  let charVals = valParser(Object.values(characteristics));
+  photos = urlParser(photos);
 
   return pool.query(
     `WITH insert AS (
