@@ -70,13 +70,33 @@ const addReview = ({
     }) +
     "]";
 
+  charKeys =
+    "[" +
+    charKeys.map((each) => {
+      return `'${parseInt(each)}'`;
+    }) +
+    "]";
+
+  charVals =
+    "[" +
+    charVals.map((each) => {
+      return `'${parseInt(each)}'`;
+    }) +
+    "]";
+
   return pool.query(
     `WITH insert AS (
       INSERT INTO
         reviews
         (review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
       VALUES
-        (nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622,'${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id
+        (nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622,'${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id, product_id
+    ), insert2 AS (
+      INSERT INTO
+        characteristics_reviews
+        (id, characteristics_id, reviews_id, value)
+      VALUES
+        (nextval('characteristics_reviews_id_seq'), unnest(array${charKeys})::integer, (select review_id from insert), unnest(array${charVals})::integer)
     )
      INSERT INTO
        photos(id, reviews_id, url)
@@ -104,7 +124,7 @@ const getMeta = ({ product_id }) => {
       AS recommended,
       json_agg(json_build_object(c.name, json_build_object(
         'id', c.id,
-        'value', (select cr.value from characteristics_reviews cr where c.id=cr.id)
+        'value', (select AVG(cr.value::real )from characteristics_reviews cr where c.id=cr.id)
         )))
       AS characteristics
       FROM
