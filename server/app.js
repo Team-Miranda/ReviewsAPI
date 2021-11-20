@@ -61,6 +61,7 @@ app.post("/reviews", (req, res) => {
 app.get("/reviews/meta", (req, res) => {
   getMeta(req.query)
     .then((result) => {
+      console.log(result.rows[0].characteristics);
       res.status(200).send(result.rows);
     })
     .catch((err) => {

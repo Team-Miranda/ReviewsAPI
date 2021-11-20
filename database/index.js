@@ -76,7 +76,7 @@ const addReview = ({
     ), insert2 AS (
       INSERT INTO
         characteristics_reviews
-        (id, characteristics_id, reviews_id, value)
+        (id, characteristics_id, reviews_id, valueß)
       VALUES
         (nextval('characteristics_reviews_id_seq'), unnest(array${charKeys})::integer, (select review_id from insert), unnest(array${charVals})::integer)
     )
@@ -104,14 +104,12 @@ const getMeta = ({ product_id }) => {
         '0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}),
         '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id}))
       AS recommended,
-      json_agg(json_build_object(c.name, json_build_object(
+      json_object_agg(c.name, json_build_object(
         'id', c.id,
-        'value', (select AVG(cr.value::real )from characteristics_reviews cr where c.id=cr.id)
-        )))
-      AS characteristics
+        'value', (select avg("value") from characteristics_reviews where characteristics_id=c.id)
+        )) AS characteristics
       FROM
       characteristics c
-      LEFT JOIN characteristics_reviews cr ON c.id=cr.id
       WHERE
       product_id=${product_id}
     GROUP BY
@@ -191,4 +189,32 @@ const getMeta = ({ product_id }) => {
         (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[4]}),
         (nextval('characteristics_reviews_id_seq'), nextval('characteristics_id_seq'), (select review_id from insert), ${charVals[5]})
     )
+
+
+
+
+    `SELECT
+      product_id,
+      json_build_object(
+        '1', (select count(reviews.rating) from reviews where rating=1 and product_id=${product_id}),
+        '2', (select count(reviews.rating) from reviews where rating=2 and product_id=${product_id}),
+        '3', (select count(reviews.rating) from reviews where rating=3 and product_id=${product_id}),
+        '4', (select count(reviews.rating) from reviews where rating=4 and product_id=${product_id}),
+        '5', (select count(reviews.rating) from reviews where rating=5 and product_id=${product_id}))
+      AS ratings,
+      json_build_object(
+        '0', (select count(reviews.recommend) from reviews where reviews.recommend=false and product_id=${product_id}),
+        '1', (select count(reviews.recommend) from reviews where reviews.recommend=true and product_id=${product_id}))
+      AS recommended,
+      json_object_agg(c.name, json_build_object(
+        'id', c.id,
+        'value', (select avg("value") from characteristics_reviews where characteristics_id=c.id)
+        )) AS characteristics
+      FROM
+      characteristics c
+      WHERE
+      product_id=${product_id}
+    GROUP BY
+      product_id
+    ;`
 */
