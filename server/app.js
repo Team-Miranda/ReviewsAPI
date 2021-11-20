@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const morgan = require("morgan");
 const {
   pool,
   getReviews,
@@ -11,6 +12,7 @@ const {
 
 // middle ware
 const app = express();
+app.use(morgan("tiny"));
 app.use(express.json());
 
 const port = process.env.port || 3000;
@@ -61,7 +63,6 @@ app.post("/reviews", (req, res) => {
 app.get("/reviews/meta", (req, res) => {
   getMeta(req.query)
     .then((result) => {
-      console.log(result.rows[0].characteristics);
       res.status(200).send(result.rows);
     })
     .catch((err) => {
