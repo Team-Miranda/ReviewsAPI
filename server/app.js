@@ -10,6 +10,7 @@ const {
   helpReview,
   reportReview,
 } = require("../database/index.js");
+const { sortNew } = require("./sorter.js");
 
 // middle ware
 const app = express();
@@ -39,7 +40,7 @@ app.get("/reviews", (req, res) => {
         product: req.query.product_id,
         page: req.query.page || 0,
         count: result.rowCount || 5,
-        result: result.rows,
+        result: sortNew(result.rows),
       };
       res.status(200).send(resObj);
     })

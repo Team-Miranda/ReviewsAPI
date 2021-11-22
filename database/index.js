@@ -44,7 +44,6 @@ const getReviews = ({ page, count, sort, product_id }) => {
     WHERE reviews.product_id = ${product_id}
     AND reported=false
     GROUP BY reviews.review_id
-    ORDER BY ${sortingPattern}
     LIMIT ${count};
     `
   );
