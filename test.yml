@@ -1,19 +1,28 @@
 config:
   target: "http://localhost:3000"
   phases:
-    - duration: 60
+    - duration: 30
       arrivalRate: 5
       name: Warm up
-    - duration: 120
+    - duration: 60
       arrivalRate: 5
       rampTo: 50
       name: Ramp up load
-    - duration: 600
+    - duration: 60
       arrivalRate: 50
+      rampTo: 150
+      name: Ramp up load
+    - duration: 60
+      arrivalRate: 150
+      rampTo: 300
+      name: Ramp up load
+    - duration: 120
+      arrivalRate: 300
+      rampTo: 600
       name: Sustained load
 
 scenarios:
   - name: "Retrive reviews"
     flow:
       - get:
-          url: "/reviews/?page=1&count=5&sort=&product_id={{$randomNumber(1,10000)}}"
+          url: "/reviews/?page=&count=&sort=&product_id={{$randomNumber(1,999999)}}"

@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const compression = require("compression");
 const morgan = require("morgan");
 const {
   pool,
@@ -13,6 +14,7 @@ const {
 // middle ware
 const app = express();
 app.use(morgan("tiny"));
+app.use(compression());
 app.use(express.json());
 
 const port = process.env.port || 3000;
@@ -42,8 +44,7 @@ app.get("/reviews", (req, res) => {
       res.status(200).send(resObj);
     })
     .catch((err) => {
-      console.log(err);
-      res.status(404).send(err);
+      res.status(404).send();
     });
 });
 
