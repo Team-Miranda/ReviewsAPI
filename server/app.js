@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const compression = require("compression");
 const morgan = require("morgan");
+const NodeCache = require("node-cache");
 const {
   pool,
   getReviews,
@@ -10,7 +11,6 @@ const {
   helpReview,
   reportReview,
 } = require("../database/index.js");
-const { sortNew } = require("./sorter.js");
 
 // middle ware
 const app = express();
@@ -40,7 +40,7 @@ app.get("/reviews", (req, res) => {
         product: req.query.product_id,
         page: req.query.page || 0,
         count: result.rowCount || 5,
-        result: sortNew(result.rows),
+        result: result.rows,
       };
       res.status(200).send(resObj);
     })
@@ -94,3 +94,43 @@ app.put("/reviews/:review_id/report", (req, res) => {
       res.send(err);
     });
 });
+
+/**
+ // get request for all reviews
+app.get("/reviews", (req, res) => {
+  //console.log("this is the req ", req.query);
+  getReviews(req.query)
+    .then((result) => {
+      let resObj = {
+        product: req.query.product_id,
+        page: req.query.page || 0,
+        count: result.rowCount || 5,
+        result: result.rows,
+      };
+      res.status(200).send(resObj);
+    })
+    .catch((err) => {
+      res.status(404).send();
+    });
+});
+
+
+
+
+// get request for all reviews
+app.get("/reviews", (req, res) => {
+  //console.log("this is the req ", req.query);
+  getReviews(req.query)
+    .then((result) => {
+      console.log(result.rows);
+      if (!myCache.get("uniqueReview")) {
+        console.log("no uniqur review in cache");
+        myCache.set("uniqueReview", result.rows);
+      }
+      res.send(myCache.take("uniqueReview"));
+    })
+    .catch((err) => {
+      res.status(404).send();
+    });
+});
+ */
