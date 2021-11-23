@@ -27,7 +27,8 @@
     "node-cache": "^5.1.2",
     "nodemon": "^2.0.15",
     "pg": "^8.7.1",
-    "postgres": "^1.0.2"
+    "postgres": "^1.0.2",
+    "pm2": "^5.1.2"
   },
   "devDependencies": {
     "morgan": "^1.10.0"
