@@ -14,6 +14,8 @@ const {
 
 // middle ware
 const app = express();
+const cache = new NodeCache();
+
 app.use(morgan("tiny"));
 app.use(compression());
 app.use(express.json());
@@ -36,13 +38,28 @@ app.get("/reviews", (req, res) => {
   //console.log("this is the req ", req.query);
   getReviews(req.query)
     .then((result) => {
-      let resObj = {
-        product: req.query.product_id,
-        page: req.query.page || 0,
-        count: result.rowCount || 5,
-        result: result.rows,
-      };
-      res.status(200).send(resObj);
+      const cachedResponse = cache.get(req.query.product_id);
+
+      if (cachedResponse) {
+        // console.log(`Cache hit for ${key}`);
+        let resObj = {
+          product: req.query.product_id,
+          page: req.query.page || 0,
+          count: result.rowCount || 5,
+          result: cachedResponse,
+        };
+        res.send(resObj);
+      } else {
+        // console.log(`Cache miss for ${key}`);
+        let resObj = {
+          product: req.query.product_id,
+          page: req.query.page || 0,
+          count: result.rowCount || 5,
+          result: cachedResponse,
+        };
+        cache.set(req.query.product_id, result.rows, 120);
+        res.send(result.rows);
+      }
     })
     .catch((err) => {
       res.status(404).send();
