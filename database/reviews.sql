@@ -32,7 +32,7 @@ CREATE TABLE photos(
 
 /* Table 'reviews' */
 CREATE TABLE reviews(
-  review_id serial,
+  id serial,
   product_id integer NOT NULL,
   rating integer NOT NULL,
   date bigint NOT NULL,
@@ -56,11 +56,11 @@ ALTER TABLE characteristics_reviews
 /* Relation 'reviews_charateristics_reviews' */
 ALTER TABLE characteristics_reviews
   ADD CONSTRAINT reviews_charateristics_reviews
-    FOREIGN KEY (reviews_id) REFERENCES reviews (id);
+    FOREIGN KEY (reviews_id) REFERENCES "reviews" (id);
 
 /* Relation 'reviews_photos' */
 ALTER TABLE photos
-  ADD CONSTRAINT reviews_photos FOREIGN KEY (reviews_id) REFERENCES reviews (id)
+  ADD CONSTRAINT reviews_photos FOREIGN KEY (reviews_id) REFERENCES "reviews" (id)
   ;
 
 COPY reviews(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) FROM '/Users/kimhonrada/hackreactor/SDC/ReviewsAPI/database/reviews.csv' DELIMITER ',' CSV HEADER;
@@ -83,7 +83,7 @@ CREATE INDEX idx_reviews_product
 ON reviews(product_id);
 
 CREATE INDEX idx_reviews_id
-ON reviews(review_id);
+ON reviews(id);
 
 CREATE INDEX idx_characterstics_reviews_id
 ON characteristics_reviews(characteristics_id);

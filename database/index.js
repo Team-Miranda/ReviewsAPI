@@ -28,7 +28,7 @@ const getReviews = ({ page, count, sort, product_id }) => {
 
   return pool.query(
     `SELECT
-      reviews.review_id,
+      reviews.id,
       reviews.product_id,
       reviews.date,
       reviews.summary,
@@ -40,10 +40,10 @@ const getReviews = ({ page, count, sort, product_id }) => {
     COALESCE (json_agg(json_build_object('id', photos.id, 'url', photos.url)) FILTER (WHERE photos.reviews_id IS NOT NULL), '[]' )
     AS photos
     FROM reviews
-    LEFT JOIN photos ON reviews.review_id = photos.reviews_id
+    LEFT JOIN photos ON reviews.id = photos.reviews_id
     WHERE reviews.product_id = ${product_id}
     AND reported=false
-    GROUP BY reviews.review_id
+    GROUP BY reviews.id
     ORDER BY ${sortingPattern}
     LIMIT ${count};
     `
@@ -70,20 +70,20 @@ const addReview = ({
     `WITH insert AS (
       INSERT INTO
         reviews
-        (review_id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
+        (id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
       VALUES
-        (nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622,'${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING review_id, product_id
+        (nextval('reviews_id_seq'), ${product_id}, ${rating}, 1615987717622,'${summary}', '${body}', ${recommend}, false, '${reviewer_name}', '${reviewer_email}', '', 0) RETURNING id, product_id
     ), insert2 AS (
       INSERT INTO
         characteristics_reviews
         (id, characteristics_id, reviews_id, value)
       VALUES
-        (nextval('characteristics_reviews_id_seq'), unnest(array${charKeys})::integer, (select review_id from insert), unnest(array${charVals})::integer)
+        (nextval('characteristics_reviews_id_seq'), unnest(array${charKeys})::integer, (select id from insert), unnest(array${charVals})::integer)
     )
      INSERT INTO
        photos(id, reviews_id, url)
      VALUES
-       (nextval('photos_id_seq'), (select review_id from insert), unnest(array${photos}))
+       (nextval('photos_id_seq'), (select id from insert), unnest(array${photos}))
         `
   );
 };
