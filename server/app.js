@@ -34,6 +34,7 @@ app.listen(port, () => {
 });
 
 // get request for all reviews
+// with caching
 app.get("/reviews", (req, res) => {
   getReviews(req.query)
     .then((result) => {
