@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const compression = require("compression");
-// const morgan = require("morgan");
+const morgan = require("morgan");
 const NodeCache = require("node-cache");
 const {
   pool,
@@ -16,7 +16,7 @@ const {
 const app = express();
 const cache = new NodeCache();
 
-// app.use(morgan("tiny"));
+app.use(morgan("tiny"));
 app.use(compression());
 app.use(express.json());
 
@@ -79,7 +79,13 @@ app.post("/reviews", (req, res) => {
 app.get("/reviews/meta", (req, res) => {
   getMeta(req.query)
     .then((result) => {
-      res.status(200).send(result.rows);
+      const cachedResponse = cache.get(req.query.product_id);
+      if (cachedResponse) {
+        res.send(cachedResponse);
+      } else {
+        cache.set(req.query.product_id, result.rows, 120);
+        res.send(result.rows);
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -108,3 +114,37 @@ app.put("/reviews/:review_id/report", (req, res) => {
       res.send(err);
     });
 });
+
+/*
+// get request for all meta data
+app.get("/reviews/meta", (req, res) => {
+  getMeta(req.query)
+    .then((result) => {
+      const cachedResponse = cache.get(req.query.product_id);
+      if (cachedResponse) {
+        res.send(cachedResponse);
+      } else {
+        cache.set(req.query.product_id, result.rows, 120);
+        res.send(result.rows);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(404).send(err);
+    });
+});
+
+
+
+
+// get request for all meta data
+app.get("/reviews/meta", (req, res) => {
+  getMeta(req.query)
+    .then((result) => {
+      res.status(200).send(result.rows);
+    })
+    .catch((err) => {
+      res.status(404).send(err);
+    });
+});
+ */
