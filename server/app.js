@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const compression = require("compression");
-const morgan = require("morgan");
+// const morgan = require("morgan");
 const NodeCache = require("node-cache");
 const {
   pool,
@@ -16,7 +16,7 @@ const {
 const app = express();
 const cache = new NodeCache();
 
-app.use(morgan("tiny"));
+// app.use(morgan("tiny"));
 app.use(compression());
 app.use(express.json());
 
@@ -35,13 +35,11 @@ app.listen(port, () => {
 
 // get request for all reviews
 app.get("/reviews", (req, res) => {
-  //console.log("this is the req ", req.query);
   getReviews(req.query)
     .then((result) => {
       const cachedResponse = cache.get(req.query.product_id);
 
       if (cachedResponse) {
-        // console.log(`Cache hit for ${key}`);
         let resObj = {
           product: req.query.product_id,
           page: req.query.page || 0,
@@ -50,7 +48,6 @@ app.get("/reviews", (req, res) => {
         };
         res.send(resObj);
       } else {
-        // console.log(`Cache miss for ${key}`);
         let resObj = {
           product: req.query.product_id,
           page: req.query.page || 0,
@@ -73,7 +70,6 @@ app.post("/reviews", (req, res) => {
       res.status(201).send();
     })
     .catch((err) => {
-      console.log(err);
       res.send(err);
     });
 });
@@ -111,43 +107,3 @@ app.put("/reviews/:review_id/report", (req, res) => {
       res.send(err);
     });
 });
-
-/**
- // get request for all reviews
-app.get("/reviews", (req, res) => {
-  //console.log("this is the req ", req.query);
-  getReviews(req.query)
-    .then((result) => {
-      let resObj = {
-        product: req.query.product_id,
-        page: req.query.page || 0,
-        count: result.rowCount || 5,
-        result: result.rows,
-      };
-      res.status(200).send(resObj);
-    })
-    .catch((err) => {
-      res.status(404).send();
-    });
-});
-
-
-
-
-// get request for all reviews
-app.get("/reviews", (req, res) => {
-  //console.log("this is the req ", req.query);
-  getReviews(req.query)
-    .then((result) => {
-      console.log(result.rows);
-      if (!myCache.get("uniqueReview")) {
-        console.log("no uniqur review in cache");
-        myCache.set("uniqueReview", result.rows);
-      }
-      res.send(myCache.take("uniqueReview"));
-    })
-    .catch((err) => {
-      res.status(404).send();
-    });
-});
- */

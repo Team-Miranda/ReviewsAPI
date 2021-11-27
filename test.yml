@@ -1,25 +1,21 @@
 config:
   target: "http://localhost:3000"
   phases:
-    - duration: 30
+    - duration: 15
       arrivalRate: 5
       name: Warm up
-    - duration: 60
+    - duration: 15
       arrivalRate: 5
       rampTo: 50
       name: Ramp up load
-    - duration: 60
+    - duration: 15
       arrivalRate: 50
-      rampTo: 150
+      rampTo: 200
       name: Ramp up load
-    - duration: 60
-      arrivalRate: 150
-      rampTo: 300
+    - duration: 30
+      arrivalRate: 200
+      rampTo: 1000
       name: Ramp up load
-    - duration: 120
-      arrivalRate: 300
-      rampTo: 600
-      name: Sustained load
 
 scenarios:
   - name: "Retrive reviews"
