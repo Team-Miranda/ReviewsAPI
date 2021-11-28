@@ -3,10 +3,11 @@ const { urlParser, valParser } = require("./helper/parser.js");
 
 // create new instance of pool
 const pool = new Pool({
-  host: "34.205.32.214",
+  host: "localhost", // change this
   user: "postgres",
   database: "postgres",
-  password: "viewsonic123"
+  password: "", // change this:wq
+
   port: 5432,
 });
 
