@@ -7,7 +7,6 @@ const pool = new Pool({
   user: "postgres",
   database: "postgres",
   password: "", // change this:wq
-
   port: 5432,
 });
 

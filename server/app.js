@@ -19,6 +19,7 @@ const cache = new NodeCache();
 app.use(morgan("tiny"));
 app.use(compression());
 app.use(express.json());
+app.use(express.static("public"));
 
 const port = process.env.port || 3000;
 
