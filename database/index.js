@@ -3,7 +3,7 @@ const { urlParser, valParser } = require("./helper/parser.js");
 
 // create new instance of pool
 const pool = new Pool({
-  host: "localhost", // change this
+  host: "localhost", // change this to the public ip
   user: "postgres",
   database: "postgres",
   password: "", // change this:wq
