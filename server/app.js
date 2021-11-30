@@ -1,5 +1,8 @@
 const express = require("express");
 const path = require("path");
+const compression = require("compression");
+const morgan = require("morgan");
+const NodeCache = require("node-cache");
 const {
   pool,
   getReviews,
@@ -11,7 +14,12 @@ const {
 
 // middle ware
 const app = express();
+const cache = new NodeCache();
+
+app.use(morgan("tiny"));
+app.use(compression());
 app.use(express.json());
+app.use(express.static("public"));
 
 const port = process.env.port || 3000;
 
@@ -27,21 +35,33 @@ app.listen(port, () => {
 });
 
 // get request for all reviews
+// with caching
 app.get("/reviews", (req, res) => {
-  //console.log("this is the req ", req.query);
   getReviews(req.query)
     .then((result) => {
-      let resObj = {
-        product: req.query.product_id,
-        page: req.query.page || 0,
-        count: result.rowCount || 5,
-        result: result.rows,
-      };
-      res.status(200).send(resObj);
+      const cachedResponse = cache.get(req.query.product_id);
+
+      if (cachedResponse) {
+        let resObj = {
+          product: req.query.product_id,
+          page: req.query.page || 0,
+          count: result.rowCount || 5,
+          result: cachedResponse,
+        };
+        res.send(resObj);
+      } else {
+        let resObj = {
+          product: req.query.product_id,
+          page: req.query.page || 0,
+          count: result.rowCount || 5,
+          result: cachedResponse,
+        };
+        cache.set(req.query.product_id, result.rows, 120);
+        res.send(result.rows);
+      }
     })
     .catch((err) => {
-      console.log(err);
-      res.status(404).send(err);
+      res.status(404).send();
     });
 });
 
@@ -52,7 +72,6 @@ app.post("/reviews", (req, res) => {
       res.status(201).send();
     })
     .catch((err) => {
-      console.log(err);
       res.send(err);
     });
 });
@@ -61,7 +80,13 @@ app.post("/reviews", (req, res) => {
 app.get("/reviews/meta", (req, res) => {
   getMeta(req.query)
     .then((result) => {
-      res.status(200).send(result.rows);
+      const cachedResponse = cache.get(req.query.product_id);
+      if (cachedResponse) {
+        res.send(cachedResponse);
+      } else {
+        cache.set(req.query.product_id, result.rows, 120);
+        res.send(result.rows);
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -90,3 +115,37 @@ app.put("/reviews/:review_id/report", (req, res) => {
       res.send(err);
     });
 });
+
+/*
+// get request for all meta data
+app.get("/reviews/meta", (req, res) => {
+  getMeta(req.query)
+    .then((result) => {
+      const cachedResponse = cache.get(req.query.product_id);
+      if (cachedResponse) {
+        res.send(cachedResponse);
+      } else {
+        cache.set(req.query.product_id, result.rows, 120);
+        res.send(result.rows);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(404).send(err);
+    });
+});
+
+
+
+
+// get request for all meta data
+app.get("/reviews/meta", (req, res) => {
+  getMeta(req.query)
+    .then((result) => {
+      res.status(200).send(result.rows);
+    })
+    .catch((err) => {
+      res.status(404).send(err);
+    });
+});
+ */
