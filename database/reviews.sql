@@ -47,7 +47,6 @@ CREATE TABLE reviews(
   PRIMARY KEY(id)
 );
 
-
 /* Relation 'characteristics_charateristics_reviews' */
 ALTER TABLE characteristics_reviews
   ADD CONSTRAINT characteristics_charateristics_reviews
@@ -63,13 +62,13 @@ ALTER TABLE photos
   ADD CONSTRAINT reviews_photos FOREIGN KEY (reviews_id) REFERENCES "reviews" (id)
   ;
 
-COPY reviews(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) FROM '/Users/kimhonrada/hackreactor/SDC/ReviewsAPI/database/reviews.csv' DELIMITER ',' CSV HEADER;
+COPY reviews(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) FROM '/home/ubuntu/sdc-postgres/Review-CSV/reviews.csv' DELIMITER ',' CSV HEADER;
 
-COPY photos(id, reviews_id, url) FROM '/Users/kimhonrada/hackreactor/SDC/ReviewsAPI/database/reviews_photos.csv' DELIMITER ',' CSV HEADER;
+COPY photos(id, reviews_id, url) FROM '/home/ubuntu/sdc-postgres/Review-CSV/reviews_photos.csv' DELIMITER ',' CSV HEADER;
 
-COPY characteristics(id, product_id, name) FROM '/Users/kimhonrada/hackreactor/SDC/ReviewsAPI/database/characteristics.csv' DELIMITER ',' CSV HEADER;
+COPY characteristics(id, product_id, name) FROM '/home/ubuntu/sdc-postgres/Review-CSV/characteristics.csv' DELIMITER ',' CSV HEADER;
 
-COPY characteristics_reviews(id, characteristics_id, reviews_id, value) FROM '/Users/kimhonrada/hackreactor/SDC/ReviewsAPI/database/characteristic_reviews.csv' DELIMITER ',' CSV HEADER;
+COPY characteristics_reviews(id, characteristics_id, reviews_id, value) FROM '/home/ubuntu/sdc-postgres/Review-CSV/characteristic_reviews.csv' DELIMITER ',' CSV HEADER;
 
 SELECT setval('reviews_id_seq', max(id)) FROM reviews;
 
