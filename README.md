@@ -122,3 +122,7 @@ Response:
 `Status: 204 NO CONTENT`
 
 ---
+
+## Author
+
+[Kim Honrada](https://github.com/kimhonrada)
