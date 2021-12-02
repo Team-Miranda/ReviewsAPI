@@ -2,7 +2,6 @@ const express = require("express");
 const path = require("path");
 const compression = require("compression");
 const morgan = require("morgan");
-const NodeCache = require("node-cache");
 const {
   pool,
   getReviews,
@@ -14,7 +13,6 @@ const {
 
 // middle ware
 const app = express();
-const cache = new NodeCache();
 
 app.use(morgan("tiny"));
 app.use(compression());
@@ -39,26 +37,13 @@ app.listen(port, () => {
 app.get("/reviews", (req, res) => {
   getReviews(req.query)
     .then((result) => {
-      const cachedResponse = cache.get(req.query.product_id);
-
-      if (cachedResponse) {
-        let resObj = {
-          product: req.query.product_id,
-          page: req.query.page || 0,
-          count: result.rowCount || 5,
-          result: cachedResponse,
-        };
-        res.send(resObj);
-      } else {
-        let resObj = {
-          product: req.query.product_id,
-          page: req.query.page || 0,
-          count: result.rowCount || 5,
-          result: cachedResponse,
-        };
-        cache.set(req.query.product_id, result.rows, 120);
-        res.send(result.rows);
-      }
+      let resObj = {
+        product: req.query.product_id,
+        page: req.query.page || 0,
+        count: result.rowCount || 5,
+        result: result.rows,
+      };
+      res.send(resObj);
     })
     .catch((err) => {
       res.status(404).send();
@@ -80,16 +65,9 @@ app.post("/reviews", (req, res) => {
 app.get("/reviews/meta", (req, res) => {
   getMeta(req.query)
     .then((result) => {
-      const cachedResponse = cache.get(req.query.product_id);
-      if (cachedResponse) {
-        res.send(cachedResponse);
-      } else {
-        cache.set(req.query.product_id, result.rows, 120);
-        res.send(result.rows);
-      }
+      res.send(result.rows);
     })
     .catch((err) => {
-      console.log(err);
       res.status(404).send(err);
     });
 });
@@ -115,37 +93,3 @@ app.put("/reviews/:review_id/report", (req, res) => {
       res.send(err);
     });
 });
-
-/*
-// get request for all meta data
-app.get("/reviews/meta", (req, res) => {
-  getMeta(req.query)
-    .then((result) => {
-      const cachedResponse = cache.get(req.query.product_id);
-      if (cachedResponse) {
-        res.send(cachedResponse);
-      } else {
-        cache.set(req.query.product_id, result.rows, 120);
-        res.send(result.rows);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(404).send(err);
-    });
-});
-
-
-
-
-// get request for all meta data
-app.get("/reviews/meta", (req, res) => {
-  getMeta(req.query)
-    .then((result) => {
-      res.status(200).send(result.rows);
-    })
-    .catch((err) => {
-      res.status(404).send(err);
-    });
-});
- */

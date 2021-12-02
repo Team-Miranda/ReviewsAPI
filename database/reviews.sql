@@ -62,6 +62,8 @@ ALTER TABLE photos
   ADD CONSTRAINT reviews_photos FOREIGN KEY (reviews_id) REFERENCES "reviews" (id)
   ;
 
+/* MAKE SURE TO CHANGE PATH FOR WHERE YOUR CSV FILES ARE */
+
 COPY reviews(id, product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) FROM '/home/ubuntu/sdc-postgres/Review-CSV/reviews.csv' DELIMITER ',' CSV HEADER;
 
 COPY photos(id, reviews_id, url) FROM '/home/ubuntu/sdc-postgres/Review-CSV/reviews_photos.csv' DELIMITER ',' CSV HEADER;
